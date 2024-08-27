@@ -38,51 +38,51 @@ accountRouter.post('/', (req, res) => {
     const { name, surname, birthDate } = req.body;
 
     if (userData.length === 0 && !name && !surname) {
-        return res.json({ error: 'User data array is empty.' });
+        return res.status(400).json({ error: 'User data array is empty.' });
     }
 
     if (!name || !surname || !birthDate) {
-        return res.json({ error: 'Name, surname and birth date are required.' });
+        return res.status(400).json({ error: 'Name, surname and birth date are required.' });
     }
 
     if (!isAlphabetic(name) || !isAlphabetic(surname)) {
-        return res.json({ error: 'Name and surname must contain only letters.' });
+        return res.status(400).json({ error: 'Name and surname must contain only letters.' });
     }
 
     if (!isValidBirthday(birthDate)) {
-        return res.json({ error: 'Invalid birthday format.' });
+        return res.status(400).json({ error: 'Invalid birthday format.' });
     }
 
     if (getAge(birthDate) < 18) {
-        return res.json({ error: 'You must be at least 18 years old to open an account.' });
+        return res.status(403).json({ error: 'You must be at least 18 years old to open an account.' });
     }
 
     const isUnique = !userData.some(user => user.name === name && user.surname === surname);
     if (!isUnique) {
-        return res.json({ error: 'Name and surname combination must be unique.' });
+        return res.status(400).json({ error: 'Name and surname combination must be unique.' });
     }
 
     userData.push({ name, surname, birthDate });
-    return res.json({ sucess: 'Account created successfully.' });
+    return res.status(200).json({ success: 'Account created successfully.' });
 });
 
 accountRouter.get('/:name-:surname', (req, res) => {
-    const { name, surname, } = req.params;
+    const { name, surname } = req.params;
     const user = userData.find(user =>
         user.name.toLowerCase() === name.toLowerCase() &&
         user.surname.toLowerCase() === surname.toLowerCase()
     );
 
     if (userData.length === 0) {
-        return res.json({ error: 'User data array is empty.' });
+        return res.status(404).json({ error: 'User data array is empty.' });
     }
 
     if (user) {
-        return res.json({
+        return res.status(200).json({
             success: `User real name: "${user.name} ${user.surname}", date of birth: ${user.birthDate}.`
         });
     } else {
-        return res.json({ error: `User: "${name} ${surname}" not found.` });
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 });
 
@@ -96,19 +96,19 @@ accountRouter.put('/:name-:surname', (req, res) => {
     );
 
     if (userIndex === -1) {
-        return res.json({ error: `User: "${name} ${surname}" not found.` });
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 
     if (!newName || !newSurname || !newBirthDate) {
-        return res.json({ error: 'Name, surname, and birth date are required.' });
+        return res.status(400).json({ error: 'Name, surname, and birth date are required.' });
     }
 
     if (!isAlphabetic(newName) || !isAlphabetic(newSurname)) {
-        return res.json({ error: 'Name and surname must contain only letters.' });
+        return res.status(400).json({ error: 'Name and surname must contain only letters.' });
     }
 
     if (!isValidBirthday(newBirthDate)) {
-        return res.json({ error: 'Invalid birthday format.' });
+        return res.status(400).json({ error: 'Invalid birthday format.' });
     }
 
     const isUnique = !userData.some((user, index) =>
@@ -116,30 +116,31 @@ accountRouter.put('/:name-:surname', (req, res) => {
     );
 
     if (!isUnique) {
-        return res.json({ error: 'Name and surname combination must be unique.' });
+        return res.status(400).json({ error: 'Name and surname combination must be unique.' });
     }
 
     userData[userIndex] = { name: newName, surname: newSurname, birthDate: newBirthDate };
-    return res.json({ success: 'Account updated successfully.' });
+    return res.status(200).json({ success: 'Account updated successfully.' });
 });
 
+
 accountRouter.get('/:name-:surname/name', (req, res) => {
-    const { name, surname, } = req.params;
+    const { name, surname } = req.params;
     const user = userData.find(user =>
         user.name.toLowerCase() === name.toLowerCase() &&
         user.surname.toLowerCase() === surname.toLowerCase()
     );
 
     if (userData.length === 0) {
-        return res.json({ error: 'User data array is empty.' });
+        return res.status(404).json({ error: 'User data array is empty.' });
     }
 
     if (user) {
-        return res.json({
+        return res.status(200).json({
             success: `User real name: "${user.name}".`
         });
     } else {
-        return res.json({ error: `User: "${name} ${surname}" not found.` });
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 });
 
@@ -153,15 +154,15 @@ accountRouter.put('/:name-:surname/name', (req, res) => {
     );
 
     if (userIndex === -1) {
-        return res.json({ error: `User: "${name} ${surname}" not found.` });
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 
     if (!newName) {
-        return res.json({ error: 'New name is required.' });
+        return res.status(400).json({ error: 'New name is required.' });
     }
 
     if (!isAlphabetic(newName)) {
-        return res.json({ error: 'Name must contain only letters.' });
+        return res.status(400).json({ error: 'Name must contain only letters.' });
     }
 
     const isUnique = !userData.some((user, index) =>
@@ -169,30 +170,31 @@ accountRouter.put('/:name-:surname/name', (req, res) => {
     );
 
     if (!isUnique) {
-        return res.json({ error: 'Name must be unique for the given surname.' });
+        return res.status(400).json({ error: 'Name must be unique for the given surname.' });
     }
 
     userData[userIndex].name = newName;
-    return res.json({ success: 'Account name updated successfully.' });
+    return res.status(200).json({ success: 'Account name updated successfully.' });
 });
 
+
 accountRouter.get('/:name-:surname/surname', (req, res) => {
-    const { name, surname, } = req.params;
+    const { name, surname } = req.params;
     const user = userData.find(user =>
         user.name.toLowerCase() === name.toLowerCase() &&
         user.surname.toLowerCase() === surname.toLowerCase()
     );
 
     if (userData.length === 0) {
-        return res.json({ error: 'User data array is empty.' });
+        return res.status(404).json({ error: 'User data array is empty.' });
     }
 
     if (user) {
-        return res.json({
+        return res.status(200).json({
             success: `User surname: "${user.surname}".`
         });
     } else {
-        return res.json({ error: `User: "${name} ${surname}" not found.` });
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 });
 
@@ -206,15 +208,15 @@ accountRouter.put('/:name-:surname/surname', (req, res) => {
     );
 
     if (userIndex === -1) {
-        return res.json({ error: `User: "${name} ${surname}" not found.` });
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 
     if (!newSurname) {
-        return res.json({ error: 'New surname is required.' });
+        return res.status(400).json({ error: 'New surname is required.' });
     }
 
     if (!isAlphabetic(newSurname)) {
-        return res.json({ error: 'Surname must contain only letters.' });
+        return res.status(400).json({ error: 'Surname must contain only letters.' });
     }
 
     const isUnique = !userData.some((user, index) =>
@@ -222,9 +224,9 @@ accountRouter.put('/:name-:surname/surname', (req, res) => {
     );
 
     if (!isUnique) {
-        return res.json({ error: 'Surname must be unique for the given name.' });
+        return res.status(400).json({ error: 'Surname must be unique for the given name.' });
     }
 
     userData[userIndex].surname = newSurname;
-    return res.json({ success: 'Account surname updated successfully.' });
+    return res.status(200).json({ success: 'Account surname updated successfully.' });
 });
