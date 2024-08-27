@@ -11,7 +11,7 @@ app.use(express.json({
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api', accountRouter);
+app.use('/api/account', accountRouter);
 
 app.get('/', (req, res) => {
     return res.send('Home page');

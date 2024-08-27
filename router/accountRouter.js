@@ -4,12 +4,7 @@ export const accountRouter = express.Router();
 
 const userData = [];
 
-accountRouter.get('/account', (req, res) => {
-    console.log(userData);
-    return res.send('account page');
-});
-
-accountRouter.post('/account', (req, res) => {
+accountRouter.post('/', (req, res) => {
     const { name, surname, birthDate } = req.body;
 
     if (userData.length === 0 && !name && !surname) {
@@ -66,4 +61,24 @@ accountRouter.post('/account', (req, res) => {
 
     userData.push({ name, surname, birthDate });
     return res.send('Account created successfully.');
+});
+
+accountRouter.get('/:name-:surname', (req, res) => {
+    const { name, surname, } = req.params;
+    const user = userData.find(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
+
+    if (userData.length === 0) {
+        return res.send('Error: User data array is empty.');
+    }
+
+    if (user) {
+        return res.send(
+            `User real name: "${user.name} ${user.surname}", date of birth: ${user.birthDate}.`
+        );
+    } else {
+        return res.send(`User: "${name} ${surname}" not found.`);
+    }
 });
