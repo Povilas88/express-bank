@@ -111,6 +111,10 @@ accountRouter.put('/:name-:surname', (req, res) => {
         return res.status(400).json({ error: 'Invalid birthday format.' });
     }
 
+    if (getAge(newBirthDate) < 18) {
+        return res.status(403).json({ error: "Users can't be younger than 18." });
+    }
+
     const isUnique = !userData.some((user, index) =>
         index !== userIndex && user.name === newName && user.surname === newSurname
     );
@@ -249,4 +253,33 @@ accountRouter.get('/:name-:surname/dob', (req, res) => {
     } else {
         return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
+});
+
+accountRouter.put('/:name-:surname/dob', (req, res) => {
+    const { name, surname } = req.params;
+    const { newBirthDate } = req.body;
+
+    const userIndex = userData.findIndex(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
+
+    if (userIndex === -1) {
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
+    }
+
+    if (!newBirthDate) {
+        return res.status(400).json({ error: 'Birth date is required.' });
+    }
+
+    if (!isValidBirthday(newBirthDate)) {
+        return res.status(400).json({ error: 'Invalid birthday format.' });
+    }
+
+    if (getAge(newBirthDate) < 18) {
+        return res.status(403).json({ error: "Users can't be younger than 18." });
+    }
+
+    userData[userIndex].birthDate = newBirthDate;
+    return res.status(200).json({ success: 'Date of birth updated successfully.' });
 });
