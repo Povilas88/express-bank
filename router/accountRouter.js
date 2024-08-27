@@ -1,38 +1,7 @@
 import express from 'express';
-
+import userData from '../data/userData.js'
+import { isAlphabetic, isValidBirthday, getAge } from '../validations/userValidations.js';
 export const accountRouter = express.Router();
-
-const userData = [];
-
-function isAlphabetic(str) {
-    return [...str].every(char => isNaN(char));
-}
-
-function isValidBirthday(birthday) {
-    if (birthday.length !== 10) {
-        return false;
-    }
-    const parts = birthday.split('-');
-    if (parts.length !== 3) {
-        return false;
-    }
-    for (let part of parts) {
-        if (isNaN(part) || part.length === 0) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function getAge(DOB) {
-    const today = new Date();
-    const birthDateObj = new Date(DOB);
-    const age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDifference = today.getMonth() - birthDateObj.getMonth();
-
-    return (monthDifference < 0 || (monthDifference === 0
-        && today.getDate() < birthDateObj.getDate())) ? age - 1 : age;
-}
 
 accountRouter.post('/', (req, res) => {
     const { name, surname, birthDate } = req.body;
