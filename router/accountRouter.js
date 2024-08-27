@@ -230,3 +230,23 @@ accountRouter.put('/:name-:surname/surname', (req, res) => {
     userData[userIndex].surname = newSurname;
     return res.status(200).json({ success: 'Account surname updated successfully.' });
 });
+
+accountRouter.get('/:name-:surname/dob', (req, res) => {
+    const { name, surname } = req.params;
+    const user = userData.find(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
+
+    if (userData.length === 0) {
+        return res.status(404).json({ error: 'User data array is empty.' });
+    }
+
+    if (user) {
+        return res.status(200).json({
+            success: `User date of birth: ${user.birthDate}.`
+        });
+    } else {
+        return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
+    }
+});
