@@ -142,3 +142,36 @@ accountRouter.get('/:name-:surname/name', (req, res) => {
         return res.json({ error: `User: "${name} ${surname}" not found.` });
     }
 });
+
+accountRouter.put('/:name-:surname/name', (req, res) => {
+    const { name, surname } = req.params;
+    const { newName } = req.body;
+
+    const userIndex = userData.findIndex(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
+
+    if (userIndex === -1) {
+        return res.json({ error: `User: "${name} ${surname}" not found.` });
+    }
+
+    if (!newName) {
+        return res.json({ error: 'New name is required.' });
+    }
+
+    if (!isAlphabetic(newName)) {
+        return res.json({ error: 'Name must contain only letters.' });
+    }
+
+    const isUnique = !userData.some((user, index) =>
+        index !== userIndex && user.name === newName && user.surname === surname
+    );
+
+    if (!isUnique) {
+        return res.json({ error: 'Name must be unique for the given surname.' });
+    }
+
+    userData[userIndex].name = newName;
+    return res.json({ success: 'Account name updated successfully.' });
+});
