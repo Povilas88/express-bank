@@ -1,9 +1,9 @@
 import express from 'express';
 import { accountRouter } from './router/accountRouter.js';
+import { depositRouter } from './router/depositRouter.js';
 
 const app = express();
 const port = 5020;
-
 
 app.use(express.json({
     type: 'application/json',
@@ -12,6 +12,7 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/account', accountRouter);
+app.use('/api/deposit', depositRouter);
 
 app.get('/', (req, res) => {
     return res.send('Home page');
