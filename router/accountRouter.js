@@ -31,7 +31,7 @@ accountRouter.post('/', (req, res) => {
         return res.status(400).json({ error: 'Name and surname combination must be unique.' });
     }
 
-    userData.push({ name, surname, birthDate });
+    userData.push({ name, surname, birthDate, balance: 0 });
     return res.status(200).json({ success: 'Account created successfully.' });
 });
 

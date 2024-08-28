@@ -1,9 +1,9 @@
 import express from 'express';
 import userData from '../data/userData.js'
 import { validateAmount } from '../validations/amountValidations.js';
-export const depositRouter = express.Router();
+export const withdrawalRouter = express.Router();
 
-depositRouter.post('/:name-:surname', (req, res) => {
+withdrawalRouter.post('/:name-:surname', (req, res) => {
     const { amount } = req.body;
     const { name, surname } = req.params;
 
@@ -20,10 +20,10 @@ depositRouter.post('/:name-:surname', (req, res) => {
         return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 
-    if (!validateAmount(amount)) {
-        return res.status(400).json({ error: 'Invalid amount' });
+    if (!validateAmount(amount) || amount > user.balance) {
+        return res.status(400).json({ error: 'Invalid amount or insufficient balance' });
     }
 
-    user.balance += amount;
-    res.status(200).json({ success: `${user.name} ${user.surname}'s deposit of "${amount}" USD was successful.` });
+    user.balance -= amount;
+    res.status(200).json({ success: `${user.name} ${user.surname}'s withdrawal of "${amount}" USD was successful.` });
 });
