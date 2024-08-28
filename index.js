@@ -1,5 +1,5 @@
 import express from 'express';
-import { accountRouter } from './router/accountRouter.js';
+import { accountRouter } from './router/account/accountRouter.js';
 import { depositRouter } from './router/depositRouter.js';
 import { withdrawalRouter } from './router/withdrawalRouter.js';
 import { transferRouter } from './router/transferRouter.js';
