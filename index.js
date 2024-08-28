@@ -2,6 +2,7 @@ import express from 'express';
 import { accountRouter } from './router/accountRouter.js';
 import { depositRouter } from './router/depositRouter.js';
 import { withdrawalRouter } from './router/withdrawalRouter.js';
+import { transferRouter } from './router/transferRouter.js';
 
 const app = express();
 const port = 5020;
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/account', accountRouter);
 app.use('/api/deposit', depositRouter);
 app.use('/api/withdrawal', withdrawalRouter);
+app.use('/api/transfer', transferRouter);
 
 app.get('/', (req, res) => {
     return res.send('Home page');
