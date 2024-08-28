@@ -6,6 +6,7 @@ export const withdrawalRouter = express.Router();
 withdrawalRouter.post('/:name-:surname', (req, res) => {
     const { amount } = req.body;
     const { name, surname } = req.params;
+    const amountInCents = amount * 100;
 
     if (userData.length === 0) {
         return res.status(404).json({ error: 'User data array is empty.' });
@@ -20,10 +21,18 @@ withdrawalRouter.post('/:name-:surname', (req, res) => {
         return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
     }
 
-    if (!validateAmount(amount) || amount > user.balance) {
-        return res.status(400).json({ error: 'Invalid amount or insufficient balance' });
+    if (!validateAmount(amount)) {
+        return res.status(400).json({ error: 'Invalid amount' });
     }
 
-    user.balance -= amount;
+    if (!Number.isInteger(amount)) {
+        return res.status(400).json({ error: 'Amount must be a whole number.' });
+    }
+
+    if (user.balance < amountInCents) {
+        return res.status(400).json({ error: 'Insufficient balance for this withdrawal.' });
+    }
+
+    user.balance -= amountInCents;
     res.status(200).json({ success: `${user.name} ${user.surname}'s withdrawal of "${amount}" USD was successful.` });
 });
