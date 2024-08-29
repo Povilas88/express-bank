@@ -1,6 +1,7 @@
 import express from 'express';
 import userData from '../data/userData.js'
 import { validateAmount } from '../validations/amountValidations.js';
+import { isValidRequest, isValidString } from '../validations/userValidations.js';
 export const transferRouter = express.Router();
 
 transferRouter.post('/:fromName-:fromSurname/:toName-:toSurname', (req, res) => {
@@ -9,9 +10,14 @@ transferRouter.post('/:fromName-:fromSurname/:toName-:toSurname', (req, res) => 
     const amountInCents = amount * 100;
     const roundedAmount = Math.round(amountInCents) / 100;
 
+    if (!isValidRequest(req.body)) {
+        return res.status(400).json({ error: 'Invalid body request.' });
+    }
+
     if (userData.length === 0) {
         return res.status(404).json({ error: 'User data array is empty.' });
     }
+
 
     const sender = userData.find(user =>
         user.name.toLowerCase() === fromName.toLowerCase() &&
@@ -23,12 +29,24 @@ transferRouter.post('/:fromName-:fromSurname/:toName-:toSurname', (req, res) => 
         user.surname.toLowerCase() === toSurname.toLowerCase()
     );
 
+    const nameError = isValidString(name, 'Name');
+    const surnameError = isValidString(surname, 'Surname');
+
+    if (nameError || surnameError) {
+        return res.status(400).json({ error: nameError || surnameError });
+    }
+
     if (!sender) {
         return res.status(404).json({ error: `Sender: "${fromName} ${fromSurname}" not found.` });
     }
 
     if (!receiver) {
         return res.status(404).json({ error: `Receiver: "${toName} ${toSurname}" not found.` });
+    }
+
+    if (sender.name.toLowerCase() === receiver.name.toLowerCase() &&
+        sender.surname.toLowerCase() === receiver.surname.toLowerCase()) {
+        return res.status(400).json({ error: 'Self-transfer is not allowed.' });
     }
 
     if (!validateAmount(amount) || amount <= 0) {

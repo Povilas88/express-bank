@@ -1,5 +1,5 @@
 import express from 'express';
-import { accountRouter } from './router/account/accountRouter.js';
+import { accountRouter } from './router/account/accountRouter/accountRouter.js';
 import { depositRouter } from './router/depositRouter.js';
 import { withdrawalRouter } from './router/withdrawalRouter.js';
 import { transferRouter } from './router/transferRouter.js';
@@ -19,7 +19,7 @@ app.use('/api/withdrawal', withdrawalRouter);
 app.use('/api/transfer', transferRouter);
 
 app.get('/', (req, res) => {
-    return res.send('Home page');
+    return res.send('Nothing to find here, use "Insomnia"');
 });
 
 app.get('*', (req, res) => {

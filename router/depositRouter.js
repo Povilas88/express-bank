@@ -1,12 +1,17 @@
 import express from 'express';
 import userData from '../data/userData.js'
 import { validateAmount } from '../validations/amountValidations.js';
+import { isValidRequest, isValidString } from '../validations/userValidations.js';
 export const depositRouter = express.Router();
 
 depositRouter.post('/:name-:surname', (req, res) => {
     const { amount } = req.body;
     const { name, surname } = req.params;
     const amountInCents = amount * 100;
+
+    if (!isValidRequest(req.body)) {
+        return res.status(400).json({ error: 'Invalid body request.' });
+    }
 
     if (userData.length === 0) {
         return res.status(404).json({ error: 'User data array is empty.' });
@@ -16,6 +21,13 @@ depositRouter.post('/:name-:surname', (req, res) => {
         user.name.toLowerCase() === name.toLowerCase() &&
         user.surname.toLowerCase() === surname.toLowerCase()
     );
+
+    const nameError = isValidString(name, 'Name');
+    const surnameError = isValidString(surname, 'Surname');
+
+    if (nameError || surnameError) {
+        return res.status(400).json({ error: nameError || surnameError });
+    }
 
     if (!user) {
         return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });

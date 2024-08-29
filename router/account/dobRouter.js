@@ -1,6 +1,6 @@
 import express from 'express';
 import userData from '../../data/userData.js'
-import { isValidBirthday, getAge } from '../../validations/userValidations.js';
+import { isValidBirthday, isValidRequest, getAge } from '../../validations/userValidations.js';
 export const dobRouter = express.Router();
 
 dobRouter.get('/:name-:surname/dob', (req, res) => {
@@ -26,6 +26,10 @@ dobRouter.get('/:name-:surname/dob', (req, res) => {
 dobRouter.put('/:name-:surname/dob', (req, res) => {
     const { name, surname } = req.params;
     const { newBirthDate } = req.body;
+
+    if (!isValidRequest(req.body)) {
+        return res.status(400).json({ error: 'Invalid body request.' });
+    }
 
     const userIndex = userData.findIndex(user =>
         user.name.toLowerCase() === name.toLowerCase() &&
