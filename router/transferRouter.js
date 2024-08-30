@@ -1,7 +1,7 @@
 import express from 'express';
 import userData from '../data/userData.js'
 import { validateAmount } from '../validations/amountValidations.js';
-import { isValidRequest, isValidString } from '../validations/userValidations.js';
+import { isValidRequest } from '../validations/userValidations.js';
 export const transferRouter = express.Router();
 
 transferRouter.post('/:fromName-:fromSurname/:toName-:toSurname', (req, res) => {
@@ -18,7 +18,6 @@ transferRouter.post('/:fromName-:fromSurname/:toName-:toSurname', (req, res) => 
         return res.status(404).json({ error: 'User data array is empty.' });
     }
 
-
     const sender = userData.find(user =>
         user.name.toLowerCase() === fromName.toLowerCase() &&
         user.surname.toLowerCase() === fromSurname.toLowerCase()
@@ -29,11 +28,8 @@ transferRouter.post('/:fromName-:fromSurname/:toName-:toSurname', (req, res) => 
         user.surname.toLowerCase() === toSurname.toLowerCase()
     );
 
-    const nameError = isValidString(name, 'Name');
-    const surnameError = isValidString(surname, 'Surname');
-
-    if (nameError || surnameError) {
-        return res.status(400).json({ error: nameError || surnameError });
+    if (!amount) {
+        return res.status(404).json({ error: `Amount required` });
     }
 
     if (!sender) {
@@ -65,6 +61,6 @@ transferRouter.post('/:fromName-:fromSurname/:toName-:toSurname', (req, res) => 
     receiver.balance += amountInCents;
     res.status(200).json({
         success: `Transfer of "${amount.toFixed(2)}" USD from ${sender.name} ${sender.surname} 
-        to ${receiver.name} ${receiver.surname} was successful.`, userData
+        to ${receiver.name} ${receiver.surname} was successful.`
     });
 });

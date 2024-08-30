@@ -1,4 +1,4 @@
-import userData from '../../../data/userData.js'
+import userData from '../../../data/userData.js';
 import { isValidString, isValidBirthday, isValidRequest, getAge } from '../../../validations/userValidations.js';
 
 export function accountPost(req, res) {
@@ -28,7 +28,9 @@ export function accountPost(req, res) {
     }
 
     if (getAge(birthDate) < 18) {
-        return res.status(403).json({ error: 'You must be at least 18 years old to open an account.' });
+        return res.status(403).json({
+            error: 'You must be at least 18 years old to open an account.'
+        });
     }
 
     const isUnique = !userData.some(user => user.name === name && user.surname === surname);

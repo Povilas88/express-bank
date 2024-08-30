@@ -11,6 +11,8 @@ export function isValidString(str, type) {
         return `${type} is too long, cannot exceed ${stringMaxSize} characters`;
     } else if (str[0] !== str[0].toUpperCase()) {
         return `${type} must start with an uppercase letter`;
+    } else if (str.slice(1) !== str.slice(1).toLowerCase()) {
+        return `${type} must have all lowercase letters after the first character`;
     } else {
         for (let char of str) {
             if (!stringAllowedABC.includes(char)) {
@@ -23,12 +25,35 @@ export function isValidString(str, type) {
 }
 
 export function isValidBirthday(birthday) {
-    const [year, month, day] = birthday.split('-').map(Number);
+    const allowedSymbol = '-0123456789';
 
-    if (!year || !month || !day
-        || birthday.length !== 10
-        || year < 1900 || year > new Date().getFullYear()
-        || month < 1 || month > 12) {
+    if (birthday.length !== 10) {
+        return false;
+    }
+
+    for (let symbol of birthday) {
+        if (!allowedSymbol.includes(symbol)) {
+            return false;
+        }
+    }
+
+    const year = Number(birthday.slice(0, 4));
+    const month = Number(birthday.slice(5, 7));
+    const day = Number(birthday.slice(8, 10));
+
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        return false;
+    }
+
+    function isLeapYear(year) {
+        return (year % 100 === 0 ? year % 400 === 0 : year % 4 === 0);
+    }
+
+    if (!isLeapYear(year) && month === 2 && day === 29) {
+        return false;
+    }
+
+    if (year < 1900 || year > new Date().getFullYear() || month < 1 || month > 12) {
         return false;
     }
 
@@ -40,14 +65,27 @@ export function isValidRequest(body) {
     return typeof body === 'object'
         && body !== null
         && !Array.isArray(body)
-        && Object.keys(body).length === 4;
+        && Object.keys(body).length <= 4
 }
 
 export function getAge(DOB) {
-    const today = new Date();
+    if (!isValidBirthday(DOB)) {
+        return false;
+    }
+
     const birthDateObj = new Date(DOB);
-    const age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDifference = today.getMonth() - birthDateObj.getMonth();
-    return (monthDifference < 0 || (monthDifference === 0
-        && today.getDate() < birthDateObj.getDate())) ? age - 1 : age;
+    const today = new Date();
+
+    if (birthDateObj > today) {
+        return false;
+    }
+
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+        age--;
+    }
+
+    return age;
 }

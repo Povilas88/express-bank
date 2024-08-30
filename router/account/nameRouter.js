@@ -5,24 +5,23 @@ export const nameRouter = express.Router();
 
 nameRouter.get('/:name-:surname/name', (req, res) => {
     const { name, surname } = req.params;
-    const user = userData.find(user =>
-        user.name.toLowerCase() === name.toLowerCase() &&
-        user.surname.toLowerCase() === surname.toLowerCase()
-    );
+
+    if (!isValidRequest(req.body)) {
+        return res.status(400).json({ error: 'Invalid body request.' });
+    }
 
     if (userData.length === 0) {
         return res.status(404).json({ error: 'User data array is empty.' });
     }
 
-    const nameError = isValidString(name, 'Name');
-
-    if (nameError) {
-        return res.status(400).json({ error: nameError });
-    }
+    const user = userData.find(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
 
     if (user) {
         return res.status(200).json({
-            success: `User real name: "${user.name}".`
+            success: `User first name: "${user.name}".`
         });
     } else {
         return res.status(404).json({ error: `User: "${name} ${surname}" not found.` });
@@ -35,6 +34,10 @@ nameRouter.put('/:name-:surname/name', (req, res) => {
 
     if (!isValidRequest(req.body)) {
         return res.status(400).json({ error: 'Invalid body request.' });
+    }
+
+    if (userData.length === 0) {
+        return res.status(404).json({ error: 'User data array is empty.' });
     }
 
     const userIndex = userData.findIndex(user =>
@@ -50,7 +53,7 @@ nameRouter.put('/:name-:surname/name', (req, res) => {
         return res.status(400).json({ error: 'New name is required.' });
     }
 
-    const nameError = isValidString(name, 'Name');
+    const nameError = isValidString(newName, 'Name');
 
     if (nameError) {
         return res.status(400).json({ error: nameError });
@@ -64,6 +67,15 @@ nameRouter.put('/:name-:surname/name', (req, res) => {
         return res.status(400).json({ error: 'Name must be unique for the given surname.' });
     }
 
+    const exists = userData.some(user =>
+        user.name.toLowerCase() === newName.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
+
+    if (exists) {
+        return res.status(400).json({ error: 'This name-surname combination already exists.' });
+    }
+
     userData[userIndex].name = newName;
-    return res.status(200).json({ success: 'Account name updated successfully.' });
+    return res.status(200).json({ success: 'Account name updated successfully.', userData });
 });

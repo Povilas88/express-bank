@@ -5,14 +5,19 @@ export const dobRouter = express.Router();
 
 dobRouter.get('/:name-:surname/dob', (req, res) => {
     const { name, surname } = req.params;
-    const user = userData.find(user =>
-        user.name.toLowerCase() === name.toLowerCase() &&
-        user.surname.toLowerCase() === surname.toLowerCase()
-    );
+
+    if (!isValidRequest(req.body)) {
+        return res.status(400).json({ error: 'Invalid body request.' });
+    }
 
     if (userData.length === 0) {
         return res.status(404).json({ error: 'User data array is empty.' });
     }
+
+    const user = userData.find(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
 
     if (user) {
         return res.status(200).json({
@@ -29,6 +34,10 @@ dobRouter.put('/:name-:surname/dob', (req, res) => {
 
     if (!isValidRequest(req.body)) {
         return res.status(400).json({ error: 'Invalid body request.' });
+    }
+
+    if (userData.length === 0) {
+        return res.status(404).json({ error: 'User data array is empty.' });
     }
 
     const userIndex = userData.findIndex(user =>

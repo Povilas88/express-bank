@@ -9,6 +9,10 @@ export function accountPut(req, res) {
         return res.status(400).json({ error: 'Invalid body request.' });
     }
 
+    if (userData.length === 0) {
+        return res.status(404).json({ error: 'User data array is empty.' });
+    }
+
     const userIndex = userData.findIndex(user =>
         user.name.toLowerCase() === name.toLowerCase() &&
         user.surname.toLowerCase() === surname.toLowerCase()
@@ -22,8 +26,8 @@ export function accountPut(req, res) {
         return res.status(400).json({ error: 'Name, surname, and birth date are required.' });
     }
 
-    const nameError = isValidString(name, 'Name');
-    const surnameError = isValidString(surname, 'Surname');
+    const nameError = isValidString(newName, 'Name');
+    const surnameError = isValidString(newSurname, 'Surname');
 
     if (nameError || surnameError) {
         return res.status(400).json({ error: nameError || surnameError });

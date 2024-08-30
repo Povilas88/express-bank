@@ -10,20 +10,14 @@ surnameRouter.get('/:name-:surname/surname', (req, res) => {
         return res.status(400).json({ error: 'Invalid body request.' });
     }
 
-    const user = userData.find(user =>
-        user.name.toLowerCase() === name.toLowerCase() &&
-        user.surname.toLowerCase() === surname.toLowerCase()
-    );
-
     if (userData.length === 0) {
         return res.status(404).json({ error: 'User data array is empty.' });
     }
 
-    const surnameError = isValidString(surname, 'Surname');
-
-    if (surnameError) {
-        return res.status(400).json({ surnameError });
-    }
+    const user = userData.find(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === surname.toLowerCase()
+    );
 
     if (user) {
         return res.status(200).json({
@@ -38,6 +32,14 @@ surnameRouter.put('/:name-:surname/surname', (req, res) => {
     const { name, surname } = req.params;
     const { newSurname } = req.body;
 
+    if (!isValidRequest(req.body)) {
+        return res.status(400).json({ error: 'Invalid body request.' });
+    }
+
+    if (userData.length === 0) {
+        return res.status(404).json({ error: 'User data array is empty.' });
+    }
+
     const userIndex = userData.findIndex(user =>
         user.name.toLowerCase() === name.toLowerCase() &&
         user.surname.toLowerCase() === surname.toLowerCase()
@@ -51,8 +53,10 @@ surnameRouter.put('/:name-:surname/surname', (req, res) => {
         return res.status(400).json({ error: 'New surname is required.' });
     }
 
-    if (!isValidString(newSurname)) {
-        return res.status(400).json({ error: 'Surname must contain only letters.' });
+    const surnameError = isValidString(newSurname, 'Surname');
+
+    if (surnameError) {
+        return res.status(400).json({ error: surnameError });
     }
 
     const isUnique = !userData.some((user, index) =>
@@ -61,6 +65,15 @@ surnameRouter.put('/:name-:surname/surname', (req, res) => {
 
     if (!isUnique) {
         return res.status(400).json({ error: 'Surname must be unique for the given name.' });
+    }
+
+    const exists = userData.some(user =>
+        user.name.toLowerCase() === name.toLowerCase() &&
+        user.surname.toLowerCase() === newSurname.toLowerCase()
+    );
+
+    if (exists) {
+        return res.status(400).json({ error: 'This name-surname combination already exists.' });
     }
 
     userData[userIndex].surname = newSurname;

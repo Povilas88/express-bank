@@ -1,7 +1,7 @@
 import express from 'express';
 import userData from '../data/userData.js'
 import { validateAmount } from '../validations/amountValidations.js';
-import { isValidRequest, isValidString } from '../validations/userValidations.js';
+import { isValidRequest } from '../validations/userValidations.js';
 export const depositRouter = express.Router();
 
 depositRouter.post('/:name-:surname', (req, res) => {
@@ -22,11 +22,8 @@ depositRouter.post('/:name-:surname', (req, res) => {
         user.surname.toLowerCase() === surname.toLowerCase()
     );
 
-    const nameError = isValidString(name, 'Name');
-    const surnameError = isValidString(surname, 'Surname');
-
-    if (nameError || surnameError) {
-        return res.status(400).json({ error: nameError || surnameError });
+    if (!amount) {
+        return res.status(404).json({ error: `Amount required` });
     }
 
     if (!user) {
