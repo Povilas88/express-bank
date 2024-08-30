@@ -37,6 +37,10 @@ export function isValidBirthday(birthday) {
         }
     }
 
+    if (birthday[4] !== '-' || birthday[7] !== '-') {
+        return false;
+    }
+
     const year = Number(birthday.slice(0, 4));
     const month = Number(birthday.slice(5, 7));
     const day = Number(birthday.slice(8, 10));
