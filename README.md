@@ -37,23 +37,21 @@ Would like to run this project locally? Open terminal and follow these steps:
 
 1. Clone the repo
     ```sh
-    git clone https://github.com/Povilas88/express-bank.git
+    git clone https://github.com/Povilas88/express-bank .
     ```
-2. Navigate to and open express-bank folder
-
-3. Install NPM packages
+2. Install NPM packages
     ```sh
-    npm i express
+    npm i
     ```
     or
     ```sh
-    npm install express
+    npm install
     ```
-4. Run the server
+3. Run the server
     ```sh
     npm run dev
     ```
-5. Download and install
+4. Download and install
     ```sh
     https://insomnia.rest/download
     ```
