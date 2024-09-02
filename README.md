@@ -76,58 +76,77 @@ Would like to run this project locally? Open terminal and follow these steps:
 -   /api/account
 
     -   POST
+
+    ```JSON
         {
         "name": "Name",
         "surname": "Surname",
         "birthDate": "YYYY-MM-DD"
         }
+    ```
+
     -   PUT /api/account/name-surname
+
+    ```JSON
         {
         "newName": "Name",
         "newSurname": "Surname",
         "newBirthDate": "YYYY-MM-DD"
         }
+    ```
+
     -   GET /api/account/name-surname
     -   DELETE /api/account/name-surname
 
 -   /api/account/name-surname/name (Ex. /api/account/john-doe/name)
-
     -   GET
     -   PUT
+    ```JSON
         {
         "newName": "Name"
         }
-
+    ```
 -   /api/account/name-surname/surname (Ex. /api/account/john-doe/surname)
     -   GET
     -   PUT
+    ```JSON
         {
         "newSurname": "Surname"
         }
+    ```
 -   /api/account/name-surname/dob (Ex. /api/account/john-doe/dob)
 
     -   GET
     -   PUT
+
+    ```JSON
         {
         "newBirthDate": "YYYY-MM-DD"
         }
+    ```
 
 -   /api/deposit/name-surname (Ex. /api/deposit/john-doe)
     -   POST
+    ```JSON
         {
         "amount": 800
         }
+    ```
 -   /api/withdrawal/name-surname (Ex. /api/withdrawal/john-doe)
     -   POST
+    ```JSON
         {
         "amount": 500
         }
+    ```
 -   /api/transfer/name-surname/name-surname (Ex. /api/transfer/john-doe/bill-wall) <br>
     (From: name-surname / To: name-surname)
     -   POST
+    ```JSON
         {
         "amount": 500.70
         }
+    ```
 
 ## 🎅 Authors
 
